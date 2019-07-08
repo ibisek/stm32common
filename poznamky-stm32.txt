@@ -1,0 +1,106 @@
+
+C++ Build  -> Settings -> Debugging -> Other debugging flags/options:
+	-Wl,--gc-sections 
+	-g -Os -ggdb -Os
+
+
+SPOLECNE KNIHOVNY
+	#ifdef STM32F042
+	..
+	#else
+	#ifdef STM32F10x
+	..
+	#else
+	#ifdef STM32F030xC
+	..
+	#else
+	#ifdef STM32F3
+	..
+	#else
+	#error "Yet unsupported architecture"
+	#endif
+	#endif
+	#endif
+	#endif
+	
+	Ten string 'STM32F042' je pro kazde CPU unikatni a je k nalezeni 
+	v project Properties -> C/C++ Build -> Settings -> MCU GCC Compiler -> Symbols.. Defined Symbols (-D)
+	
+	..a pro kazde CPU je specificky
+	
+
+Programovani cinskym ST-LINKem:
+	edit STM32F042K6T6.cfg
+	
+	# use hardware reset, connect under reset
+	# [ibi]: when using the dev-board's ST-link v2: 
+	#reset_config srst_only srst_nogate
+	# [ibi]: when using the chinese ST-link: 
+	reset_config none separate
+
+	(##)
+	Config je v novejsim SW4STM32 autogenerovane. 
+	Reset jde nastavit v runConfigurations->Debugger->dole je Generator options a tam nastavit Reset Mode na "Software system reset"
+	
+
+Vytvoreni HEXu:
+	arm-none-eabi-objcopy -O ihex "ognCube1.f103.elf" "ognCube1.f103.hex"
+
+Flashnuti HEXu:
+	sudo ../stlink/build/Release/st-flash --reset --format ihex write ./ognCube1.f103.hex
+
+Precteni BINu:
+	./st-flash read ognCube3.bin 0x8000000 131072
+
+Flashnuti BINu:
+	./st-flash write serialLoader.f103.bin 0x8000000
+	./st-flash write ognCube3.bin 0x8000000
+	
+Smazani FLASH:
+	./st-flash erase
+			
+	st-link flashing utility:
+		https://github.com/texane/stlink
+	
+INTERRUPT IRQ VECTORS:
+	Pro f042 jaksi nejsou doplnene.
+	@see https://github.com/szczys/stm32f0-discovery-basic-template/blob/master/Device/startup_stm32f0xx.s
+	edit startup_stm32.s na do g_pfnVectors na spravne misto dopsat handlery.. nebo:
+	NAKONEC jsem pomoci STM32CUBE vygeneroval projekt a vzal z nej gcc/startup_stm32f042x6.s 
+	
+	Pro f030 taky ne.
+	Opet jsem pomoci STM32CUBE vygeneroval projekt a vzal z nej gcc/startup_stm32f030xc.s
+
+	Pro f103 - vygenerovat, ale dany pocet nul nahradit odkazy z vygenerovaneho souboru - ma to jinou delku.
+	
+
+ERRORs:
+	* Candidates are: void * xxx(void *, int, ?)
+		- Expand "C/C++ general" the item in the left hand tree view by clicking the arrow, (just clicking the item itself does not expand the suboptions)
+		- From the suboptions select "Preprocessor Include Paths, Macros etc."
+		- Click the "Providers" tab
+		- Check the box next to "CDT GCC Built-in Compiler Settings [ Shared ]".	
+	
+	* nejde pustit debug: "Error message from debugger back end: localhost:3333: Connection timed out."
+		- updatnout programator. Hledej 'stlink update', stahni tool z ST.com a nahraj novy firmware
+		
+	* (??) vid/pid are not identical: 0x0483/0x374B 0x0483/0x3748
+		locate stlink-v2-1.cfg
+		.. edit those files (?)
+		
+		VID/PID 0x0483 0x3748 for ST-Link/V2
+		VID/PID 0x0483 0x374b for ST-Link/V2-1
+	
+	* (??) Wrong device detected
+		apt install openocd
+		vim /usr/share/openocd/scripts/interface/stlink-v2-1.cfg
+		.. nastavit (USB) VID a PID na spravne hodnoty 
+
+
+Flashovani HEXu:
+	./stlink/build/Release/st-flash read ./aaa 0x8000000 0x100000
+	./stlink/build/Release/st-flash --reset --format ihex write build/main.hex
+	
+
+
+	
