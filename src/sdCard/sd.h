@@ -17,7 +17,7 @@
 #include "diskio.h"
 
 #include "serial.h"
-#include "../../src/watchdog.h"
+#include "../watchdog.h"
 
 //--------------------------------------------------
 //					TIMER stuff
