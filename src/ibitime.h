@@ -42,6 +42,7 @@ void ibitime_reset();
 void delay_ms(uint16_t);
 //void delay_us(uint16_t);
 void delay_1us();
+void delay_50us();
 void delay_100us();
 void delay_250us();
 void delay_500us();

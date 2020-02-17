@@ -93,6 +93,21 @@ void delay_1us() {
 #endif
 }
 
+void delay_50us() {
+#if SYSTEM_CORE_CLOCK == 32000000
+	for(uint16_t i=0; i<64; i++) asm("NOP");
+
+#elif SYSTEM_CORE_CLOCK == 36000000
+	for(uint16_t i=0; i<72; i++) asm("NOP");
+
+#elif SYSTEM_CORE_CLOCK == 48000000
+	for(uint16_t i=0; i<95; i++) asm("NOP");
+
+#else
+#error "SYSTEM_CORE_CLOCK not set"
+#endif
+}
+
 void delay_100us() {
 #if SYSTEM_CORE_CLOCK == 32000000
 	for(uint16_t i=0; i<128; i++) asm("NOP");
