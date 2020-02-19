@@ -194,7 +194,7 @@ void spi_select() {
 	// Read PRIMASK register, check interrupt status before disabling them.
 	// Returns 0 if they are enabled, or non-zero if disabled.
 //	intEnabled = __get_PRIMASK() != 0;
-	__disable_irq();	// ~ cli
+//	__disable_irq();	// ~ cli
 
 	GPIO_WriteBit(ssGpio, ssPin, Bit_RESET);
 }
@@ -203,7 +203,7 @@ void spi_unselect() {
 	delay_1us();
 	GPIO_WriteBit(ssGpio, ssPin, Bit_SET);
 
-	__enable_irq();	// ~ sei
+//	__enable_irq();	// ~ sei
 }
 
 uint8_t spi_transfer(uint8_t data) {
