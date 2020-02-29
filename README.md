@@ -7,4 +7,4 @@ There are APIs for SPI, I2C, Serial 1+2, CAN bus, SDA card (FAT) driver, some se
 
 It took me some years to come to this state. I would really appreciate such a repo those years ago - not only to just to stupidly copy and use the code but also to learn some stuff.
 
-From my personal experience I know the beginnings with STM32 could be hard and thus I hope this will aid you folks a little bit with your nasty shenanigans ;)
+From my personal experience I know the beginnings with STM32 could be hard and thus I hope this will aid you folks a little bit with your shenanigans ;)
