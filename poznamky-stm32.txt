@@ -43,6 +43,8 @@ Programovani cinskym ST-LINKem:
 	Reset jde nastavit v runConfigurations->Debugger->dole je Generator options a tam nastavit Reset Mode na "Software system reset"
 	
 
+stlink-tools
+
 Vytvoreni HEXu:
 	arm-none-eabi-objcopy -O ihex "ognCube1.f103.elf" "ognCube1.f103.hex"
 
