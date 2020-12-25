@@ -22,7 +22,11 @@
 #ifdef STM32F3
 #include "stm32f30x.h"
 #else
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 #endif
@@ -30,7 +34,7 @@
 
 #include <sys/_stdint.h>
 
-#define SYSTEM_CORE_CLOCK 36000000
+#define SYSTEM_CORE_CLOCK 32000000
 
 #define DELAY_TICK_FREQUENCY_US 1000000   /* = 1MHZ -> microsecond delay */
 #define DELAY_TICK_FREQUENCY_MS 1000      /* = 1kHZ -> millisecond delay */
