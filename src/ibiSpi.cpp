@@ -28,7 +28,7 @@ uint8_t IbiSpi::transfer(uint8_t data) {
 //	while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_TXE) == RESET);
 //	while ((spix->SR & SPI_I2S_FLAG_TXE) == 0); // wait for TX buffer empty before pushing in next byte
 
-#ifdef STM32F10x
+#if defined(STM32F10x) || defined(STM32L1)
 	SPI_I2S_SendData(spix, data);
 #else
 	SPI_SendData8(spix, data);
@@ -41,7 +41,8 @@ uint8_t IbiSpi::transfer(uint8_t data) {
 	delay_1us();
 
 	uint8_t b;
-#ifdef STM32F10x
+
+#if defined(STM32F10x) || defined(STM32L1)
 	b = SPI_I2S_ReceiveData(spix);
 #else
 	b = SPI_ReceiveData8(spix);
@@ -72,26 +73,56 @@ void IbiSpi::init() {
 	if(spix == SPI2) SPIx_GPIO = GPIOB;
 
 	// GPIO configuration:
+#ifdef STM32F10x
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // Enable GPIO A bank clock
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // Enable GPIO B bank clock
+#else
+#ifdef STM32L1
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+#endif
+#endif
 
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	// MISO, MOSI, SCK pins:
+#ifdef STM32F10x
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+#else
+#ifdef STM32L1
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+#endif
+#endif
+
 	if(spix == SPI1) GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 	else GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	GPIO_Init(SPIx_GPIO, &GPIO_InitStructure);
 
 	// SS pin:
+#ifdef STM32F10x
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+#else
+#ifdef STM32L1
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+#endif
+#endif
 	GPIO_InitStructure.GPIO_Pin = ssPin;
 	GPIO_Init(ssGpio, &GPIO_InitStructure);
 
 	// Enable SPI clock:
+#ifdef STM32F10x
 	if(spix == SPI1) RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 	else RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+#else
+#ifdef STM32L1	# SPI1@APB2 and SPI2@APB1 !!
+	if(spix == SPI1) RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+	else RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+#endif
+#endif
 
 	SPI_InitTypeDef SPI_InitStructure;
 	SPI_StructInit(&SPI_InitStructure);

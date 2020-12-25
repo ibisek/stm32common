@@ -14,7 +14,12 @@
 #include <stm32f10x_spi.h>
 #include <stm32f10x_rcc.h>
 #else
+#ifdef STM32L1
+#include <stm32l1xx_spi.h>
+#include <stm32l1xx_rcc.h>
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 
 class IbiSpi {
