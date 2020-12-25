@@ -18,7 +18,13 @@
 #include <stm32f10x_rcc.h>
 #include <system_stm32f10x.h>
 #else
+#ifdef STM32L1
+#include <stm32l1xx_flash.h>
+#include <stm32l1xx_rcc.h>
+#include <system_stm32l1xx.h>
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 
@@ -98,6 +104,10 @@ void init32MHzClock() {
 	#ifdef STM32F10x
 	// Set up 32 MHz Core Clock using HSI (8Mhz/2) x 8 = 32MHz
 	RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_8);
+	#endif
+	#ifdef STM32L1
+	// Set up 32 MHz Core Clock using HSI (16Mhz/2) x 4 = 32MHz
+	RCC_PLLConfig(RCC_PLLSource_HSI, RCC_PLLMul_4, RCC_PLLDiv_2);
 	#endif
 
 	RCC_PLLCmd (ENABLE);
