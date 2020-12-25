@@ -18,7 +18,11 @@
 #ifdef STM32F10x
 #include "i2c.f103.h"
 #else
+#ifdef STM32L1
+#include "i2c.l1xx.h"
+#else
 #include "i2c.h"
+#endif
 #endif
 
 
