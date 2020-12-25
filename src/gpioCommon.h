@@ -19,7 +19,13 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
 #else
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#include "stm32l1xx_gpio.h"
+#include "stm32l1xx_rcc.h"
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 #endif
@@ -37,6 +43,10 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOPuPd_TypeDe
 
 #ifdef STM32F10x
 void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOMode_TypeDef upDown);
+#endif
+
+#ifdef STM32L1
+void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOMode_TypeDef inOut, GPIOPuPd_TypeDef upDown);
 #endif
 
 #endif /* GPIOCOMMON_H_ */

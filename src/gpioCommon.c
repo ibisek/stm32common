@@ -5,7 +5,7 @@
  *      Author: ibisek
  */
 
-#include <gpioCommon.h>
+#include "gpioCommon.h"
 
 
 void init_pin_out(GPIO_TypeDef* GPIOx, uint32_t gpioPin) {
@@ -14,7 +14,7 @@ void init_pin_out(GPIO_TypeDef* GPIOx, uint32_t gpioPin) {
 	GPIO_InitStructure.GPIO_Pin = gpioPin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 
-#if defined(STM32F030xC) || defined(STM32F042)
+#if defined(STM32F030xC) || defined(STM32F042) || defined(STM32L1)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push-pull (PP) or open-drain (OD)
@@ -31,7 +31,7 @@ void init_pin_in(GPIO_TypeDef* GPIOx, uint32_t gpioPin) {
 	GPIO_InitStructure.GPIO_Pin = gpioPin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 
-#if defined(STM32F030xC) || defined(STM32F042)
+#if defined(STM32F030xC) || defined(STM32F042) || defined(STM32L1)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 #endif
@@ -42,7 +42,7 @@ void init_pin_in(GPIO_TypeDef* GPIOx, uint32_t gpioPin) {
 	GPIO_Init(GPIOx, &GPIO_InitStructure);
 }
 
-#ifdef STM32F042
+#if defined(STM32F042) || defined(STM32L1)
 /**
  * @param GPIOx
  * @param gpioPin
@@ -53,7 +53,7 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOPuPd_TypeDe
 	GPIO_InitStructure.GPIO_Pin = gpioPin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 
-#if defined(STM32F030xC) || defined(STM32F042)
+#if defined(STM32F030xC) || defined(STM32F042) || defined(STM32L1)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_PuPd = upDown;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push-pull (PP) or open-drain (OD)
@@ -63,7 +63,7 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOPuPd_TypeDe
 }
 #endif
 
-#ifdef STM32F10x
+#if defined(STM32F10x) || defined(STM32L1)
 /**
  * @param GPIOx
  * @param gpioPin
@@ -80,13 +80,12 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOMode_TypeDe
 }
 #endif
 
-
 void init_pin_analog(GPIO_TypeDef* GPIOx, uint32_t gpioPin) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Pin = gpioPin;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 
-#if defined(STM32F030xC) || defined(STM32F042)
+#if defined(STM32F030xC) || defined(STM32F042) || defined(STM32L1)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 #endif
@@ -107,3 +106,4 @@ void disableJTAG() {
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);	// JTAG-DP Disabled and SW-DP Enabled
 }
 #endif
+
