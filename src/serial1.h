@@ -8,13 +8,17 @@
 #ifndef SERIAL1_H_
 #define SERIAL1_H_
 
-#ifdef STM32F042
+#if defined STM32F0 || STM32F042
 #include "stm32f0xx.h"
 #else
 #ifdef STM32F10x
 #include "stm32f10x.h"
 #else
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 

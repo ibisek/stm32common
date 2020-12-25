@@ -23,7 +23,11 @@
 #ifdef STM32F030xC
 #include "stm32f0xx.h"
 #else
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 #endif

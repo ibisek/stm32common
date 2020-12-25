@@ -127,6 +127,55 @@ void _serial_init_f042(uint32_t baudRate, uint8_t enableRxInt) {
 }
 #endif
 
+#ifdef STM32L1
+/**
+ * Initialises USART2 for STM32L1xx on pins PA3 (RX) and PA2 (TX).
+ */
+void _serial_init_l1xx(uint32_t baudRate, uint8_t enableRxInt) {
+	// enable GPIO and USART2 clocks:
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+
+	// alternate function UART:
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);// alternate function UART
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);// alternate function UART
+
+	// configure USART TX as alternate function push-pull:
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	// configure USART RX as input floating:
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	// USART configuration:
+	USART_InitTypeDef USART_InitStructure;
+	USART_StructInit(&USART_InitStructure);
+	if (baudRate != 9600) USART_InitStructure.USART_BaudRate = baudRate;
+	USART_Init(USART2, &USART_InitStructure);
+
+	if (enableRxInt == 1) { /* Enable USART2 IRQ */
+		NVIC_InitTypeDef NVIC_InitStructure;
+		NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
+
+		USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);	// enable RX interrupt
+	}
+
+	USART_Cmd(USART2, ENABLE);	// enable USART
+}
+#endif
+
 /**
  * Initialises USART2 for STM32F303 on pins PA3 (RX) and PA2 (TX).
  * @param baudRate
@@ -139,7 +188,11 @@ void serial_init(uint32_t baudRate, uint8_t enableRxInt) {
 #ifdef STM32F10x
 	_serial_init_f10x(baudRate, enableRxInt);
 #else
+#ifdef STM32L1
+	_serial_init_l1xx(baudRate, enableRxInt);
+#else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 }
