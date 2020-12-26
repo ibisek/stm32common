@@ -192,3 +192,10 @@ double bmp280_readAltitude(double seaLevelhPa) {
 
 	return altitude;
 }
+
+double bmp280_seaLevelPressure(double altitude) {
+	double pressure = bmp280_readPressure(); // in Si units for Pascal
+	pressure /= 100;
+
+	return pressure / pow((1-altitude / 44330), 5.255);
+}
