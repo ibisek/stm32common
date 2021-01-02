@@ -131,7 +131,61 @@ void spi_initF103() {
 	SPI_SSOutputCmd(SPI1, ENABLE); // enable NSS output for master mode
 	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
 }
+
 #else
+#ifdef STM32L1
+
+/**
+ * Initialises SPI1.
+ */
+void spi_initL1() {
+	SPI_I2S_DeInit(SPI1);
+
+	// GPIO configuration:
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); // Enable GPIO A bank clock
+	if(ssGpio == GPIOB) RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	// MISO, MOSI, SCK pins:
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);// alternate function SPI1_SCK
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);// alternate function SPI1_MISO
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);// alternate function SPI1_MOSI
+
+	// SS pin:
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Pin = ssPin;
+	GPIO_Init(ssGpio, &GPIO_InitStructure);
+
+	// Enable SPI clock:
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+
+	SPI_InitTypeDef SPI_InitStructure;
+	SPI_StructInit(&SPI_InitStructure);
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32; // 32MHz/32 = 1MHz.
+	SPI_Init(SPI1, &SPI_InitStructure);
+
+	// enable SPI
+	SPI_Cmd(SPI1, ENABLE);
+
+	//SPI_RxFIFOThresholdConfig(SPI1, SPI_RxFIFOThreshold_QF);
+	SPI_CalculateCRC(SPI1, DISABLE);
+
+	SPI_SSOutputCmd(SPI1, ENABLE); // enable NSS output for master mode
+	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
+}
+
+#else
+
 void spi_initOtherArchitectures() {
 	// GPIO configuration:
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);// Enable GPIO A bank clock
@@ -180,12 +234,17 @@ void spi_initOtherArchitectures() {
 	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
 }
 #endif
+#endif
 
 void spi_init() {
 #ifdef STM32F10x
 	spi_initF103();
 #else
+#ifdef STM32L1
+	spi_initL1();
+#else
 	spi_initOtherArchitectures();
+#endif
 #endif
 }
 
@@ -210,7 +269,7 @@ uint8_t spi_transfer(uint8_t data) {
 //	while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_TXE) == RESET);
 //	while ((spix->SR & SPI_I2S_FLAG_TXE) == 0); // wait for TX buffer empty before pushing in next byte
 
-#ifdef STM32F10x
+#if defined(STM32F10x) || defined(STM32L1)
 	SPI_I2S_SendData(spix, data);
 #else
 	SPI_SendData8(spix, data);
@@ -223,7 +282,7 @@ uint8_t spi_transfer(uint8_t data) {
 	delay_1us();
 
 	uint8_t b;
-#ifdef STM32F10x
+#if defined(STM32F10x) || defined(STM32L1)
 	b = SPI_I2S_ReceiveData(spix);
 #else
 	b = SPI_ReceiveData8(spix);

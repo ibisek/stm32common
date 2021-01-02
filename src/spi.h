@@ -16,7 +16,12 @@
 #include <stm32f10x_spi.h>
 #include <stm32f10x_rcc.h>
 #else
+#ifdef STM32L1
+#include <stm32l1xx_spi.h>
+#include <stm32l1xx_rcc.h>
+# else
 #error "Yet unsupported architecture"
+#endif
 #endif
 #endif
 
@@ -40,6 +45,12 @@
 //#define SS_PIN	GPIO_Pin_3
 #endif
 
+#ifdef STM32L1
+// RADIO Slave Select pin for OGN CUBE 1+2+3 (PB0):
+#define SS_GPIO GPIOB
+#define SS_PIN	GPIO_Pin_0
+#endif
+
 /* ---- PUBLIC INTERFACE ---- */
 
 void spi_init();
@@ -47,6 +58,10 @@ void spi_init();
 #ifdef STM32F10x
 void spi_initF103parametric(SPI_TypeDef* SPIx, GPIO_TypeDef* SS_GPIOx, uint16_t SS_GPIO_Pin, uint8_t writeBIT);
 #endif
+#ifdef STM32L1
+void spi_initL1parametric(SPI_TypeDef* SPIx, GPIO_TypeDef* SS_GPIOx, uint16_t SS_GPIO_Pin, uint8_t writeBIT);
+#endif
+
 
 void spi_select();
 void spi_unselect();
