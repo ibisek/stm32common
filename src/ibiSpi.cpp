@@ -84,6 +84,7 @@ void IbiSpi::init() {
 #endif
 
 	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_StructInit(&GPIO_InitStructure);
 
 	// MISO, MOSI, SCK pins:
 #ifdef STM32F10x
@@ -100,6 +101,18 @@ void IbiSpi::init() {
 	if(spix == SPI1) GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 	else GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	GPIO_Init(SPIx_GPIO, &GPIO_InitStructure);
+
+#ifdef STM32L1
+	if(spix == SPI1) {
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);// alternate function SPI1_SCK
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);// alternate function SPI1_MISO
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);// alternate function SPI1_MOSI
+	} else { // SPI2
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);// alternate function SPI1_SCK
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_SPI2);// alternate function SPI1_MISO
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);// alternate function SPI1_MOSI
+	}
+#endif
 
 	// SS pin:
 #ifdef STM32F10x
@@ -118,7 +131,7 @@ void IbiSpi::init() {
 	if(spix == SPI1) RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 	else RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 #else
-#ifdef STM32L1	# SPI1@APB2 and SPI2@APB1 !!
+#ifdef STM32L1	// SPI1@APB2 and SPI2@APB1 !!
 	if(spix == SPI1) RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 	else RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 #endif
@@ -145,15 +158,15 @@ void IbiSpi::init() {
 
 uint8_t IbiSpi::readByte(uint8_t addr) {
 	select();
-	//serial_print_char('A');
+	// serial_print_char('A');
 	if(writeBit)
 		transfer(addr & 0x7F);	// ensure upper bit (write) set to 0
 	else
 		transfer(addr | 0x80);	// ensure upper bit (read) set to 1
 
-	//serial_print_char('B');
+	// serial_print_char('B');
 	uint8_t byte = transfer(0x00);
-	//serial_print_char('C');
+	// serial_print_char('C');
 	unselect();
 
 	return byte;
