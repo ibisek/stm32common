@@ -29,6 +29,7 @@ const int MPU6500_DEVID = 0x70;
 //------------------------------------------
 
 IbiSpi accSpi(SPI2, GPIOB, GPIO_Pin_12, 0);	// OGN CUBE 3 | MPU has 0 write bit!!
+//IbiSpi accSpi(SPI1, GPIOB, GPIO_Pin_6, 0);	// test @ Nucleo-L152 SPI1
 
 bool available = true;
 
@@ -156,6 +157,11 @@ void readData() {
 //	GyY = buf[10] << 8 | buf[11]; // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
 //	GyZ = buf[12] << 8 | buf[13]; // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
 
+	if ((AcX | AcY | AcZ | Tmp) == 0) {
+		data.valid = 0;
+		return;
+	}
+
 	data.temperature = Tmp / 334.0 + 21.0;	//equation for temperature in degrees C from datasheet
 
 	// adjust range if needed:
@@ -197,7 +203,7 @@ void readAndPrintData() {
 uint8_t init() {
 	accSpi.init();
 
-	accSpi.writeByte(MPU6500_USER_CTRL, 0x10); // disable I2C (I2C_IF_DIS)
+	accSpi.writeByte(MPU6500_USER_CTRL, 0x10); 	// disable I2C (I2C_IF_DIS)
 	accSpi.writeByte(MPU6500_PWR_MGMT1, 0x00);	// set to zero - wakes up the MPU-6500
 	delay_100us();
 
