@@ -26,12 +26,12 @@
 #endif
 
 
-#define BMP280_BUS I2C1
+#define BMP280_BUS I2C2
 
 /*=========================================================================
  I2C ADDRESS/BITS/SETTINGS
  -----------------------------------------------------------------------*/
-#define BMP280_ADDRESS	0x76 << 1	// the 7-bit address is 0x76 (SDO to GND) or 0x77 (SDO to UCC)
+#define BMP280_ADDRESS	0x77 << 1	// the 7-bit address is 0x76 (SDO to GND) or 0x77 (SDO to UCC)
 #define BMP280_CHIPID   0x58
 /*=========================================================================*/
 
