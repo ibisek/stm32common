@@ -46,7 +46,7 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOMode_TypeDe
 #endif
 
 #ifdef STM32L1
-void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOMode_TypeDef inOut, GPIOPuPd_TypeDef upDown);
+void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOPuPd_TypeDef upDown);
 #endif
 
 #endif /* GPIOCOMMON_H_ */
