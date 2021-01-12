@@ -109,9 +109,8 @@ void _serial1_init_l1xx(uint16_t baudRate, uint8_t enableRxInt) {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 	// alternate function UART:
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);// alternate function UART
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);// alternate function UART
-
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);// alternate function UART
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);// alternate function UART
 
 	// configure USART TX as alternate function push-pull:
 	GPIO_InitTypeDef GPIO_InitStructure;
