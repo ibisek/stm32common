@@ -106,4 +106,18 @@ void disableJTAG() {
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);	// JTAG-DP Disabled and SW-DP Enabled
 }
 #endif
+#ifdef STM32L1
+/**
+ * Disables JTAG in order PB3, PB4 and PA15 could be used as GPIO.
+ * (for STM32F103)
+ */
+void disableJTAG() {
+	//	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_SWJ);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+	init_pin_out(GPIOA, GPIO_PinSource15);
+	init_pin_out(GPIOB, GPIO_PinSource3);
+	init_pin_out(GPIOB, GPIO_PinSource4);
+}
+#endif
 
