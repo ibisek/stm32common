@@ -46,7 +46,9 @@ static void sd__init_timer() {
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	timerInitStructure.TIM_Period = 32;	// = counts up to this value and raises an interrupt
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+#ifdef STM32F10x
 	timerInitStructure.TIM_RepetitionCounter = 0;
+#endif
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 	TIM_Cmd(TIM2, ENABLE);
 
