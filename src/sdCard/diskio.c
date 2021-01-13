@@ -271,7 +271,15 @@ void power_on (void)
 //	spi_initF103parametric(SPI1, GPIOB, GPIO_Pin_3);	//OGN2 SD CS is at PB3
 
 	// init SD card detect pin, pull up:
+#ifdef STM32F1
 	init_pin_in_pushPull(CARD_DETECT_PORT, CARD_DETECT_PIN, GPIO_Mode_IPU);
+#else
+#ifdef STM32L1
+	init_pin_in_pushPull(CARD_DETECT_PORT, CARD_DETECT_PIN, GPIO_PuPd_UP);
+#else
+#error "Yet unsupported architecture"
+#endif
+#endif
 
 #ifdef STM32_USE_DMA
 	/* enable DMA clock */
