@@ -59,18 +59,18 @@ void _clearProcessingBuffer() {
 }
 
 void printGpsRecord() {
-	serial_print("fix:");
+	serial_print("GPS fix:");
 	serial_print_char((char) 0x30 + gpsRecord.hasFix);
 	serial_print_arr_limited(" d:", gpsRecord.date, sizeof(gpsRecord.date));
 	serial_print_arr_limited(" t:", gpsRecord.time, sizeof(gpsRecord.time));
-	serial_print_arr_limited(" sat:", gpsRecord.numSatellites, sizeof(gpsRecord.numSatellites));
+	serial_print_arr_limited(" nSat:", gpsRecord.numSatellites, sizeof(gpsRecord.numSatellites));
 
 	if (gpsRecord.hasFix == 1) {
 		serial_print_arr_limited(" lat:", gpsRecord.latitude, sizeof(gpsRecord.latitude));
 		serial_print_arr_limited(" lon:", gpsRecord.longitude, sizeof(gpsRecord.longitude));
-		serial_print_arr_limited(" gs:", gpsRecord.groundSpeed, sizeof(gpsRecord.groundSpeed));
-		serial_print_arr_limited(" co:", gpsRecord.trackCourse, sizeof(gpsRecord.trackCourse));
 		serial_print_arr_limited(" alt:", gpsRecord.altitude, sizeof(gpsRecord.altitude));
+		serial_print_arr_limited(" trk:", gpsRecord.trackCourse, sizeof(gpsRecord.trackCourse));
+		serial_print_arr_limited(" gs: ", gpsRecord.groundSpeed, sizeof(gpsRecord.groundSpeed));
 
 		serial_print(" p:");
 		serial_print_int(gpsRecord.pdop);
