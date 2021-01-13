@@ -8,10 +8,21 @@
 #define _USE_IOCTL	1
 
 
+#ifdef STM32F10x
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_spi.h"
+#else
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#include "stm32l1xx_gpio.h"
+#include "stm32l1xx_rcc.h"
+#include "stm32l1xx_spi.h"
+#else
+#error "Yet unsupported architecture"
+#endif
+#endif
 
 #include "integer.h"
 
