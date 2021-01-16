@@ -212,13 +212,13 @@ void _processGGA(char* buf, uint8_t bufLen) {
 /**
  * Expects NMEA without leading '$'
  */
-void _processGpsBuffer() {
-	if (startsWith(rxBuffer+2, "GGA")) {
+void _processBuffer() {
+	if (startsWith(processingBuffer+2, "GGA")) {
 		_processGGA(processingBuffer, processingBufferDataLen); // GPGGA is last sentence in the batch -> we have new position
 		newGpsPositionAvailable = 1;
-	} else if (startsWith(rxBuffer+2, "RMC")) {
+	} else if (startsWith(processingBuffer+2, "RMC")) {
 		_processRMC(processingBuffer, processingBufferDataLen);
-	} else if (startsWith(rxBuffer+2, "GSA")) {
+	} else if (startsWith(processingBuffer+2, "GSA")) {
 		_processGSA(processingBuffer, processingBufferDataLen);
 	}
 }
@@ -227,7 +227,7 @@ void loop() {
 	if (processingBufferDataSet) {
 		if(startsWith(processingBuffer+2, "GGA") || startsWith(processingBuffer+2, "RMC") || startsWith(processingBuffer+2, "GSA")) {
 			if(nmea_checkSumOk(processingBuffer, processingBufferDataLen))
-				_processGpsBuffer();
+				_processBuffer();
 		}
 
 		_clearProcessingBuffer();
