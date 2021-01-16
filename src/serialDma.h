@@ -16,10 +16,18 @@
 #ifndef SERIALDMA_H_
 #define SERIALDMA_H_
 
+#ifdef STM32F10x
 #include "stm32f10x.h"
 #include "stm32f10x_exti.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_exti.h"
+#endif
+#ifdef STM32L1
+#include "stm32l1xx.h"
+#include "stm32l1xx_exti.h"
+#include "stm32l1xx_rcc.h"
+#include "stm32l1xx_exti.h"
+#endif
 
 #include <string.h>
 
