@@ -134,7 +134,6 @@ void spi_initF103() {
 
 #else
 #ifdef STM32L1
-
 /**
  * Initialises SPI1.
  */
@@ -164,7 +163,7 @@ void spi_initL1() {
 	GPIO_InitStructure.GPIO_Pin = ssPin;
 	GPIO_Init(ssGpio, &GPIO_InitStructure);
 
-	// Enable SPI clock:
+	// Enable SPI clock: (!! SPI1@APB2 and SPI2@APB1 !!)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
 	SPI_InitTypeDef SPI_InitStructure;
@@ -181,7 +180,86 @@ void spi_initL1() {
 	SPI_CalculateCRC(SPI1, DISABLE);
 
 	SPI_SSOutputCmd(SPI1, ENABLE); // enable NSS output for master mode
-	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
+	//SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
+}
+/**
+ * Initialises SPI1/2.
+ * SPI1: PA5,6,7
+ * SPI2: PB 13,14,15
+ * @param SPIx SPI1/SPI2
+ * @param SS_GPIOx
+ * @param SS_GPIO_Pin
+ * @param writeBIT
+ */
+//void spi_initL1parametric(SPI_TypeDef* SPIx, GPIO_TypeDef* SS_GPIOx, uint16_t SS_GPIO_Pin, uint8_t writeBIT) {		// C
+void spi_initL1parametric(SPI_TypeDef* SPIx, GPIO_TypeDef* SS_GPIOx, uint16_t SS_GPIO_Pin, uint8_t writeBIT = 1) {	// C++
+
+	// !! THIS FUNCTION HAS NOT BEEN TESTED YET !!
+
+	spix = SPIx;
+	ssGpio = SS_GPIOx;
+	ssPin = SS_GPIO_Pin;
+	writeBit = writeBIT;
+
+	SPI_I2S_DeInit(spix);
+
+	GPIO_TypeDef* SPIx_GPIO = GPIOA;
+	if(spix == SPI2) SPIx_GPIO = GPIOB;
+
+	// GPIO configuration:
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);	// Enable GPIO A bank clock
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);	// Enable GPIO B bank clock
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	// MISO, MOSI, SCK pins:
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	if(spix == SPI1) GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+	else GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_Init(SPIx_GPIO, &GPIO_InitStructure);
+
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);// alternate function SPI1_SCK
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);// alternate function SPI1_MISO
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);// alternate function SPI1_MOSI
+
+	// SS pin:
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Pin = ssPin;
+	GPIO_Init(ssGpio, &GPIO_InitStructure);
+
+
+	// Enable SPI clock: (!! SPI1@APB2 and SPI2@APB1 !!)
+	if(spix == SPI1) RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+	else RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+	SPI_InitTypeDef SPI_InitStructure;
+	SPI_StructInit(&SPI_InitStructure);
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32; // 32MHz/32 = 1MHz.
+	SPI_Init(SPI1, &SPI_InitStructure);
+
+	// enable SPI
+	SPI_Cmd(SPI1, ENABLE);
+
+	//SPI_RxFIFOThresholdConfig(SPI1, SPI_RxFIFOThreshold_QF);
+	SPI_CalculateCRC(SPI1, DISABLE);
+
+	SPI_SSOutputCmd(SPI1, ENABLE); // enable NSS output for master mode
+	//SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
+
+	// enable SPI
+	SPI_Cmd(spix, ENABLE);
+
+	//SPI_RxFIFOThresholdConfig(SPI1, SPI_RxFIFOThreshold_QF);
+	SPI_CalculateCRC(spix, DISABLE);
+
+	// DISABLE default NSS output:
+	SPI_SSOutputCmd(spix, DISABLE); // enable NSS output for master mode
+//	SPI_NSSInternalSoftwareConfig(spix, SPI_NSSInternalSoft_Reset);
 }
 
 #else
