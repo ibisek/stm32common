@@ -18,7 +18,7 @@
 typedef void (*TaskCallback)(uint8_t);
 
 #ifndef TASKER_MAX_TASKS
-#define TASKER_MAX_TASKS	20	/* max 254 entries, one occupies 14 bytes of RAM */
+#define TASKER_MAX_TASKS	32	/* max 254 entries, one occupies 14 bytes of RAM */
 #endif
 
 void tasker_init(uint8_t prioritized);
