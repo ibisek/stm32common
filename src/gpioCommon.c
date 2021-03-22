@@ -63,7 +63,7 @@ void init_pin_in_pushPull(GPIO_TypeDef* GPIOx, uint32_t gpioPin, GPIOPuPd_TypeDe
 }
 #endif
 
-#if defined(STM32F10x) || defined(STM32L1)
+#if defined(STM32F10x)
 /**
  * @param GPIOx
  * @param gpioPin
