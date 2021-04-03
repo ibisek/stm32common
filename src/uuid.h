@@ -47,7 +47,12 @@ void printCpuId(void) {
  * @return the last section (CCCC) from the UUID = AAAA:BBBB:CCCC
  */
 uint32_t getCpuIdSection3(void) {
-	return STM32_UUID[2];
+#ifdef STM32F10x
+	return STM32_UUID[2];	// can be used as unique id
+#endif
+#ifdef STM32L1
+	return STM32_UUID[0] ^ STM32_UUID[1] ^ STM32_UUID[2];	// this should (hopefully) give a unique ID up to some extent..
+#endif
 }
 
 #endif //__UUID_H
