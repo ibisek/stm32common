@@ -53,10 +53,13 @@ Flashnuti HEXu:
 
 Precteni BINu:
 	./st-flash read ognCube3.bin 0x8000000 131072
+	./st-flash read serialLoader.l152.bin 0x8000000 262144
 
 Flashnuti BINu:
 	./st-flash write serialLoader.f103.bin 0x8000000
 	./st-flash write ognCube3.bin 0x8000000
+	./st-flash write serialLoader.l152.bin 0x8000000
+	
 	
 Smazani FLASH:
 	./st-flash erase
