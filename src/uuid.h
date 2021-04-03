@@ -25,7 +25,7 @@
 #ifdef STM32L1
 // Base address: 0x1FF80050 for Cat.1 and Cat.2 devices and 0x1FF800D0 for Cat.3, Cat.4, Cat.5 and Cat.6 devices
 // For device category see section 1.4 of the reference manual.
-#define STM32_UUID ((uint32_t *)0x1FF80050)	// address for STM32L1xx
+#define STM32_UUID ((uint32_t *)0x1FF800D0)	// address for STM32L152CC (256kB ~ Cat.3)
 #else
 #error "Yet unsupported architecture"
 #endif
