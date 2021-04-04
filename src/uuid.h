@@ -11,6 +11,10 @@
 #ifndef __UUID_H
 #define __UUID_H
 
+#ifdef STM32L1
+#include <uuidEeprom.h>
+#endif
+
 /**
  * The STM32 factory-programmed UUID memory (see ref. manual, search for Unique device ID register)
  * Three values of 32 bits each starting at this address
@@ -51,7 +55,7 @@ uint32_t getCpuIdSection3(void) {
 	return STM32_UUID[2];	// can be used as unique id
 #endif
 #ifdef STM32L1
-	return STM32_UUID[0] ^ STM32_UUID[1] ^ STM32_UUID[2];	// this should (hopefully) give a unique ID up to some extent..
+	return eepromUniqueId_read();	// reads out (pre)programmed id
 #endif
 }
 
