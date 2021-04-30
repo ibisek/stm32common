@@ -39,11 +39,19 @@
 
 void printCpuId(void) {
 	serial_print("CPU id: ");
+#ifdef STM32L1
+	serial_print_hex32(STM32_UUID[0]);	// offset 0x00 (see RM0038)
+	serial_print_char(':');
+	serial_print_hex32(STM32_UUID[1]);	// offset 0x04
+	serial_print_char(':');
+	serial_print_hex32(STM32_UUID[5]);	// offset 0x14
+#else // F103
 	serial_print_hex32(STM32_UUID[0]);
 	serial_print_char(':');
 	serial_print_hex32(STM32_UUID[1]);
 	serial_print_char(':');
 	serial_print_hex32(STM32_UUID[2]);
+#endif
 	serial_print_char('\n');
 }
 
@@ -55,7 +63,7 @@ uint32_t getCpuIdSection3(void) {
 	return STM32_UUID[2];	// can be used as unique id
 #endif
 #ifdef STM32L1
-	return eepromUniqueId_read();	// reads out (pre)programmed id
+	return eepromUniqueId_read();	// reads out (by boot-loader) preprogrammed id
 #endif
 }
 
