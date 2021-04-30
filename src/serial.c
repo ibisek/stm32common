@@ -7,6 +7,10 @@
 
 #include "serial.h"
 
+#ifdef SERIAL2_WITH_DMA
+#include "serialDma.h"
+#endif
+
 #ifdef STM32F10x
 
 /**
@@ -53,7 +57,7 @@ void _serial_init_f10x(uint32_t baudRate, uint8_t enableRxInt) {
 }
 #endif
 
-#if defined(STM32F10x) && defined(SERIAL2_WITH_DMA)
+#if defined(SERIAL2_WITH_DMA)
 /**
  * Initializes RX interrupt and DMA controller. Requires DMA1_Channel6_IRQHandler to be implemented.
  * @param rxBuffer
