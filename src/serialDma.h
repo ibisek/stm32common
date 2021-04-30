@@ -36,7 +36,7 @@ namespace serialDma {
 void init_serial2DmaRx(char* buffer, uint8_t bufferSize);
 void init_serial2DmaTx();
 void init_serial2DmaInterrupt(uint8_t enableRx, uint8_t enableTx);
-void serial2StartDmaTx(char* buffer, uint8_t dataLen);
+void serial2StartDmaTx(char* buffer, uint16_t dataLen);
 
 }
 

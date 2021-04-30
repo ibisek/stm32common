@@ -20,9 +20,14 @@ namespace serialDma {
 //							LOCAL CONSTANTS & VARIABLES
 //-----------------------------------------------------
 
-const uint8_t DMA_TX_BUFFER_SIZE = 100;
+const uint16_t DMA_TX_BUFFER_SIZE = 1024;
 char dmaTxBuffer[DMA_TX_BUFFER_SIZE];
 volatile uint8_t dmaTxBusy = 0;
+
+uint16_t dmaTxBufferIdx = 0;
+uint16_t dmaStartIdx = 0;
+uint16_t dmaEndIdx = 0;
+
 
 //-----------------------------------------------------
 //											SERIAL IRQ
@@ -125,20 +130,28 @@ void init_serial2DmaInterrupt(uint8_t enableRx, uint8_t enableTx) {
 	}
 }
 
-void serial2StartDmaTx(char* buffer, uint8_t dataLen) {
-	uint16_t timeout = 1234;
-	while (dmaTxBusy == 1 && (timeout--) > 0);	// do not transmit another data while the DMA has not finished the previous data yet
-	if(timeout == 0) return;	// do not risk reset by watch dog (!)
+void serial2StartDmaTx(char* buffer, uint16_t dataLen) {
+	if (!dmaTxBusy && dmaEndIdx > 0) {	// if the previous DMA transfer has finished and the buffer has not been shifted yet
+		uint16_t len = dmaEndIdx - dmaTxBufferIdx;
+		memmove(dmaTxBuffer, dmaTxBuffer+dmaEndIdx, len);
+		dmaTxBufferIdx = len;
+		dmaEndIdx = 0;
+	}
 
-	if (dataLen > DMA_TX_BUFFER_SIZE) dataLen = DMA_TX_BUFFER_SIZE;	// do not overflow the buffer size
+	uint16_t remaining = DMA_TX_BUFFER_SIZE - dmaTxBufferIdx;
+	if (dataLen > remaining) dataLen = remaining;	// do not overflow the buffer
 
-	memcpy(dmaTxBuffer, buffer, dataLen);
+	memcpy(dmaTxBuffer+dmaTxBufferIdx, buffer, dataLen);	// append the new buffer data into the TX buffer
+	dmaTxBufferIdx += dataLen;
 
-	DMA1_Channel7->CMAR = (uint32_t) dmaTxBuffer;
-	DMA1_Channel7->CNDTR = dataLen;
-	DMA_Cmd(DMA1_Channel7, ENABLE);	// Enable the DMA TX Stream
+	if (!dmaTxBusy) {
+		dmaEndIdx = dmaTxBufferIdx;
 
-	dmaTxBusy = 1;
+		DMA1_Channel7->CMAR = (uint32_t) dmaTxBuffer;
+		DMA1_Channel7->CNDTR = dmaEndIdx;
+		DMA_Cmd(DMA1_Channel7, ENABLE);	// Enable the DMA TX Stream
+		dmaTxBusy = 1;
+	}
 }
 
 } // ~ namespace
