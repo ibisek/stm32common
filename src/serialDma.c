@@ -132,8 +132,8 @@ void init_serial2DmaInterrupt(uint8_t enableRx, uint8_t enableTx) {
 
 void serial2StartDmaTx(char* buffer, uint16_t dataLen) {
 	if (!dmaTxBusy && dmaEndIdx > 0) {	// if the previous DMA transfer has finished and the buffer has not been shifted yet
-		uint16_t len = dmaEndIdx - dmaTxBufferIdx;
-		memmove(dmaTxBuffer, dmaTxBuffer+dmaEndIdx, len);
+		uint16_t len = dmaTxBufferIdx - dmaEndIdx;
+		if (len > 0) memmove(dmaTxBuffer, dmaTxBuffer+dmaEndIdx, len);
 		dmaTxBufferIdx = len;
 		dmaEndIdx = 0;
 	}
