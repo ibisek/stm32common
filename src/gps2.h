@@ -148,15 +148,15 @@ void _processGSA(char* buf, uint8_t bufLen) {
 
 	dataLen = extractItem(15, buf, bufLen, data);	// PDOP
 	if(dataLen > 0)
-		gpsRecord.pdop = strNumToInt(data, dataLen);
+		gpsRecord.pdop = round(strNumToInt(data, dataLen) / 10);	// *dop always have one decimal place
 
 	dataLen = extractItem(16, buf, bufLen, data);	// HDOP
 	if(dataLen > 0)
-		gpsRecord.hdop = strNumToInt(data, dataLen);
+		gpsRecord.hdop = round(strNumToInt(data, dataLen) / 10);	// *dop always have one decimal place
 
 	dataLen = extractItem(17, buf, bufLen, data);	// VDOP
 	if(dataLen > 0)
-		gpsRecord.vdop = strNumToInt(data, dataLen);
+		gpsRecord.vdop = round(strNumToInt(data, dataLen) / 10);	// *dop always have one decimal place
 }
 
 
