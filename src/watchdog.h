@@ -36,6 +36,8 @@ void initWatchdog() {
 	// 909us x 4095 = ~ 3.7s
 	IWDG_SetReload(0xFFF); // <0; 0x0FFF>
 
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Disable);
+
 	IWDG_Enable();
 }
 
