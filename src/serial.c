@@ -9,6 +9,8 @@
 
 #ifdef SERIAL2_WITH_DMA
 #include "serialDma.h"
+#include <stdarg.h>
+#include <stdio.h>
 #endif
 
 #ifdef STM32F10x
@@ -83,6 +85,17 @@ void serial_initDmaTx() {
  */
 void serial_printDma(char* buffer, uint8_t dataLen) {
 	serialDma::serial2StartDmaTx(buffer, dataLen);
+}
+
+void serial_printfDma(const char *fmt, ...) {
+	char buf[256];
+	memset(buf, 0, sizeof(buf));
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buf, sizeof(buf), fmt, args);
+	va_end(args);
+	serial_printDma(buf, strlen(buf));
+	va_end(args);
 }
 #endif
 

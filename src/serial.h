@@ -57,6 +57,7 @@ void serial_stop();
 void serial_initDmaRx(char* rxBuffer, uint8_t rxBufferSize);
 void serial_initDmaTx();
 void serial_printDma(char* buffer, uint8_t dataLen);
+void serial_printfDma(const char *fmt, ...);
 //#endif
 
 void serial_print_char(const char c);
