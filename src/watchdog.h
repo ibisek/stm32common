@@ -29,7 +29,17 @@ void initWatchdog() {
 	//(PCLK1 (32MHz)/4096)/8 = 977Hz  (~1 ms)
 	//(PCLK1 (36MHz)/4096)/8 = 1099Hz (~909 us)
 	//(PCLK1 (48MHz)/4096)/8 = 1465Hz (~683 us)
-	IWDG_SetPrescaler(IWDG_Prescaler_8);
+	//IWDG_SetPrescaler(IWDG_Prescaler_8);
+
+	//(PCLK1 (32MHz)/4096)/16 = 489Hz  (~2 ms)
+	//(PCLK1 (36MHz)/4096)/16 = 550Hz (~2 ms)
+	//(PCLK1 (48MHz)/4096)/16 = 732Hz (~ 1.4ms)
+	IWDG_SetPrescaler(IWDG_Prescaler_16);
+
+	//(PCLK1 (32MHz)/4096)/32 = 244Hz  (~4 ms)
+	//(PCLK1 (36MHz)/4096)/32 = 274Hz (~ 4 ms)
+	//(PCLK1 (48MHz)/4096)/32 = 366Hz (~ 2.7ms)
+	//IWDG_SetPrescaler(IWDG_Prescaler_32);
 
 	// 683us x 15 = ~0.01s
 	// 683us x 4095 = ~2.7s
