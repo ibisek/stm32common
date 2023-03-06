@@ -500,8 +500,10 @@ DSTATUS disk_initialize (
 				ty = 0;
 		}
 	}
+
 	CardType = ty;
 	release_spi();
+	//serial_print("CTYPE:"); serial_print_int(ty); serial_print_char('\n');
 
 	if (ty) {			/* Initialization succeeded */
 		cardStatus &= ~STA_NOINIT;		/* Clear STA_NOINIT */
