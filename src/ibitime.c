@@ -7,6 +7,10 @@
 
 #include "ibitime.h"
 
+#ifdef STM32L432xx
+#include <stm32l4xx_hal.h>
+#endif
+
 volatile uint32_t _millis = 0;
 //volatile uint32_t _micros = 0;
 //volatile uint8_t _micros8 = 0;
@@ -19,6 +23,7 @@ volatile uint32_t _millis = 0;
 extern "C" void SysTick_Handler(void);	// C++ necessity
 #endif
 
+#ifndef STM32L432xx
 // SysTick interrupt handler
 void SysTick_Handler() {
 //	_micros += 10;
@@ -30,13 +35,19 @@ void SysTick_Handler() {
 
 	_millis++;
 }
+#endif
 
 void ibitime_init() {
 	SysTick_Config(SystemCoreClock / DELAY_TICK_FREQUENCY_MS);	// !! uS x 10 !! (rychleji to nefunguje)
 }
 
 uint32_t ibitime_millis() {
+#ifndef STM32L432xx
 	return _millis;
+#else
+	_millis = HAL_GetTick();
+	return _millis;
+#endif
 }
 
 void ibitime_reset() {
